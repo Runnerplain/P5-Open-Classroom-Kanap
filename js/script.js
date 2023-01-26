@@ -1,15 +1,21 @@
+//------------ Command fetch & get data
+
 fetch('http://localhost:3000/api/products')
-  .then((res) => res.json()) /*------------ Command fetch */
+  .then((res) => res.json())
   .then((data) => addProducts(data))
+
+
+//---------Add products to HTML
+
 
 function addProducts(data) {
   data.forEach((kanap) => {
-    const { _id, imageUrl, altTxt, name, description } = kanap
+    const { _id, imageUrl, altTxt, name, description } = kanap   /* Destructuring const */
     const image = makeImage(imageUrl, altTxt)
     const anchor = makeAnchor(_id)
     const article = document.createElement(
       'article',
-    ) /*---------Add products to HTML */
+    )
     const h3 = makeH3(name)
     const p = makeParagraph(description)
     appendElementToArticle(article, image, h3, p)
@@ -23,22 +29,30 @@ function appendElementToArticle(article, image, h3, p) {
   article.appendChild(p)
 }
 
+
+//---------------- Create link with Id of product
+
+
 function makeAnchor(id) {
   const anchor = document.createElement('a')
   anchor.href =
     './product.html?id=' +
-    id /*----------------- Create link with Id of product */
+    id
   return anchor
 }
+
+
+// ---------------------------Link Article to Anchor
 
 function appendArticleToAnchor(anchor, article) {
   const items = document.querySelector('#items')
   if (items != null) {
-    /*----------------------- Link Article to Anchor */
     items.appendChild(anchor)
     anchor.appendChild(article)
   }
 }
+
+// ---------- Create Image, H3 & paragraphe
 
 function makeImage(imageUrl, altTxt) {
   const image = document.createElement('img')

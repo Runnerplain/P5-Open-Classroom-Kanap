@@ -1,3 +1,5 @@
+//--------------Take products _id-------------
+
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 const id = urlParams.get('id')
@@ -21,7 +23,6 @@ function handleData(kanap) {
   makePrice(price)
   makeDescription(description)
   makeColors(colors)
-  make
 }
 
 // ----------- Make elements on page --------------
@@ -72,8 +73,10 @@ function handleClick() {
   redirectToCart()
 }
 
+//---------save change color for same item in cart---------
+
 function saveOrder(color, quantity) {
-  const key = `${id}-${color}` /*save change color for same item in cart */
+  const key = `${id}-${color}`
   const data = {
     id: id,
     color: color,
@@ -86,14 +89,18 @@ function saveOrder(color, quantity) {
   localStorage.setItem(key, JSON.stringify(data))
 }
 
+// ----------- Check vality of order & return error if null -------------
+
 function isOrderInvalid(color, quantity) {
   if (color == null || color === '' || quantity == null || quantity == 0) {
     alert(
       "S'il vous plait, choisissez une couleur et une quantité",
-    ) /* ----------- Check vality of order & return error if null ------------- */
+    )
     return true
   }
 }
+
+
 function redirectToCart() {
   window.location.href = 'cart.html'
 }
