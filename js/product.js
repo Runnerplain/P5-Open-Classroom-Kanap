@@ -73,14 +73,19 @@ function handleClick() {
   redirectToCart()
 }
 
-//---------save change color for same item in cart---------
+//---------save "change" color for same item in cart---------
 
 function saveOrder(color, quantity) {
   const key = `${id}-${color}`
+  const localSameItem = JSON.parse(localStorage.getItem(key))
+  let quantityProduct = quantity
+  if (localSameItem != null) {
+    quantityProduct = Number(quantityProduct) + (localSameItem.quantity)
+  }
   const data = {
     id: id,
     color: color,
-    quantity: Number(quantity),
+    quantity: Number(quantityProduct),
     price: itemPrice,
     imageUrl: imgUrl,
     altTxt: altText,
@@ -92,7 +97,7 @@ function saveOrder(color, quantity) {
 // ----------- Check vality of order & return error if null -------------
 
 function isOrderInvalid(color, quantity) {
-  if (color == null || color === '' || quantity == null || quantity == 0) {
+  if (color == null || color === '' || quantity == null || quantity <= 0) {
     alert(
       "S'il vous plait, choisissez une couleur et une quantité",
     )

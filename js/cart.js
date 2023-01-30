@@ -33,6 +33,11 @@ function displayItem(item) {
   displayTotalPrice()
 }
 
+
+let getKey = (item) => {
+  return `${item.id}-${item.color}`
+}
+
 // ------------- Using 'reduce' instead of 'for each'--------------
 
 
@@ -212,7 +217,7 @@ function deleteDataFromCache(item) {
 
 function saveNewDataToCache(item) {
   const dataToSave = JSON.stringify(item)
-  const key = `${item.id}-${item.color}`
+  const key = getKey(item)
   localStorage.setItem(key, dataToSave)
 }
 
@@ -221,10 +226,9 @@ function saveNewDataToCache(item) {
 function submitForm(e) {
   e.preventDefault()
   if (cart.length === 0) {
-    alert('Please select items to buy')
-    return
+    alert('S\il vous plait, choisissez au moins un article !')
+    return false
   }
-
   if (isFormInvalid()) return
   if (isEmailInvalid()) return
 
@@ -246,8 +250,13 @@ function submitForm(e) {
     .catch((err) => console.error(err))
 }
 
-
 // ----------- Final check for 'form' & 'email' before confirmation with REGEX check validator ---------------
+function isFinalOrderIsInvalid(itemQuantity) {
+  if (itemQuantity <= 0 || itemQuantity >= 100) {
+    handleError()
+    return;
+  } else (makeRequestBody())
+}
 
 
 function isFormInvalid() {
@@ -256,10 +265,10 @@ function isFormInvalid() {
   inputs.forEach((input) => {
     if (input.value === '') {
       alert("S'il vous plait, remplissez tous les champs du formulaire")
-      return false
+
     }
-    return true
   })
+  return false
 }
 
 
@@ -271,5 +280,10 @@ function isEmailInvalid() {
     return true
   }
   return false
+}
+
+function handleError(e) {
+  e.preventDefault()
+  alert('S\il vous plait, choisissez au moins un article !')
 }
 
