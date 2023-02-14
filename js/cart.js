@@ -5,9 +5,11 @@ const cart = []
 retrieveItemFromCache()
 cart.forEach((item) => displayItem(item))
 
-const orderButton = document.querySelector('#order')
-orderButton.addEventListener('click', (e) => submitForm(e))
+// const orderButton = document.querySelector('#order')
+// orderButton.addEventListener('submit', (e) => submitForm(e))
 
+const form = document.querySelector('form')
+form.addEventListener("submit", handleForm)
 
 // -------------------------Go check & take from cache----------------- 
 
@@ -21,13 +23,13 @@ function retrieveItemFromCache() {
     cart.push(itemObjet)
   }
 }
-
+// --------------------------Show item-------------------------------------
 function displayItem(item) {
   const article = makeArticle(item)
   const imageDiv = makeImageDiv(item)
   article.appendChild(imageDiv)
-  const card__Item__Content = makeCartContent(item)
-  article.appendChild(card__Item__Content)
+  const cart__Item__Content = makeCartContent(item)
+  article.appendChild(cart__Item__Content)
   displayArticle(article)
   displayTotalQuantity()
   displayTotalPrice()
@@ -59,11 +61,12 @@ function displayArticle(article) {
 }
 
 
+
 // --------------------- Making function------------------------ 
 
 function makeArticle(item) {
   const article = document.createElement('article')
-  article.classList.add('card__item')
+  article.classList.add('cart__item')
   article.dataset.id = item.id
   article.dataset.color = item.color
   return article
@@ -78,28 +81,6 @@ function makeImageDiv(item) {
   div.appendChild(image)
   return div
 }
-
-
-function makeRequestBody() {
-  const form = document.querySelector('.cart__order__form')
-  const firstName = form.elements.firstName.value
-  const lastName = form.elements.lastName.value
-  const address = form.elements.address.value
-  const city = form.elements.city.value
-  const email = form.elements.email.value
-  const body = {
-    contact: {
-      firstName: firstName,
-      lastName: lastName,
-      address: address,
-      city: city,
-      email: email,
-    },
-    products: getIdsFromCache(),
-  }
-  return body
-}
-
 
 function makeCartContent(item) {
   const cardItemContent = document.createElement('div')
@@ -135,6 +116,8 @@ function makeDescription(item) {
 }
 
 
+// ------- take ids (items) from cache & push-------------
+
 function getIdsFromCache() {
   const numberOfProducts = localStorage.length
   const ids = []
@@ -148,6 +131,8 @@ function getIdsFromCache() {
 
 
 
+// ------------ Adding Delete & Quantity to settings --------------
+
 function addDeleteToSettings(settings, item) {
   const div = document.createElement('div')
   div.classList.add('cart__item__content__settings__delete')
@@ -157,8 +142,6 @@ function addDeleteToSettings(settings, item) {
   div.appendChild(p)
   settings.appendChild(div)
 }
-
-
 function addQuantityToSettings(settings, item) {
   const quantity = document.createElement('div')
   quantity.classList.add('cart__item__content__settings__quantity')
@@ -178,6 +161,8 @@ function addQuantityToSettings(settings, item) {
   quantity.appendChild(input)
   settings.appendChild(quantity)
 }
+
+
 
 function updatePriceAndQuantity(id, newValue, item) {
   const itemToUpdate = cart.find((item) => item.id === id)
@@ -213,7 +198,7 @@ function deleteDataFromCache(item) {
   localStorage.removeItem(key)
 }
 
-//------------ Saving new data(informations) to cache-------------
+//------------ Saving new data(informations) to cache -------------
 
 function saveNewDataToCache(item) {
   const dataToSave = JSON.stringify(item)
@@ -221,18 +206,189 @@ function saveNewDataToCache(item) {
   localStorage.setItem(key, dataToSave)
 }
 
-// ------------- Prevent for no refreshing page & alert --------------- /
 
-function submitForm(e) {
+
+// --------------- Validation form ------------------------------
+
+// Selection of module id for error MSG 
+const firstNameMsg = document.querySelector('#firstNameErrorMsg')
+const lastNameMsg = document.querySelector('#lastNameErrorMsg')
+const addressMsg = document.querySelector('#addressErrorMsg')
+const cityMsg = document.querySelector('#cityErrorMsg')
+const emailMsg = document.querySelector('#emailErrorMsg')
+
+// dictionary for error messages 
+
+const errorMsgs = {
+  firstNameMsg: "Veuillez rentrer un prénom valide entre 3 et 25 caractères et sans chiffre.",
+  lastNameMsg: "Veuillez rentrer un prénom valide entre 3 et 25 caractères et sans chiffre.",
+  addressMsg: "Format de l'addresse incorrect",
+  cityMsg: "Format de la ville incorrect",
+  emailMsg: "Veuillez rentrer un email valide"
+}
+
+// Regex generator for input
+const regexName = /[A-Za-z -.]{3,25}/
+const regexAddress = /[A-Za-z -.0-9.]{3,25}/
+const regexCity = /[A-Za-z -.]{3,30}/
+const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+
+// FirstName input selection, validation & style transform
+const firstNameInput = document.querySelector('.cart__order__form__question:nth-child(1) input')
+firstNameInput.addEventListener('blur', firstNameValidation)
+firstNameInput.addEventListener('input', firstNameValidation)
+
+function firstNameValidation() {
+  if (regexName.test(firstNameInput.value)) {
+    firstNameInput.style.border = "2px solid green"
+    firstNameMsg.style.color = "transparent"
+    inputsValidity.firstName = true
+  }
+  else {
+    firstNameInput.style.border = "2px solid red"
+    firstNameMsg.textContent = errorMsgs.firstNameMsg
+    firstNameMsg.style.color = "#F24646"
+    firstNameMsg.style.fontWeight = "500"
+    inputsValidity.firstName = false
+  }
+}
+
+// LastName input selection, validation & style transform
+const lastNameInput = document.querySelector('.cart__order__form__question:nth-child(2) input')
+
+lastNameInput.addEventListener('blur', lastNameValidation)
+lastNameInput.addEventListener('input', lastNameValidation)
+
+
+function lastNameValidation() {
+  if (regexName.test(lastNameInput.value)) {
+    lastNameInput.style.border = "2px solid green"
+    lastNameMsg.style.color = "transparent"
+    inputsValidity.lastName = true
+  }
+  else {
+    lastNameInput.style.border = "2px solid red"
+    lastNameMsg.textContent = errorMsgs.lastNameMsg
+    lastNameMsg.style.color = "#F24646"
+    lastNameMsg.style.fontWeight = "500"
+    inputsValidity.lastName = false
+  }
+}
+
+// Address input selection, validation & style transform
+const addressInput = document.querySelector('.cart__order__form__question:nth-child(3) input')
+
+addressInput.addEventListener('blur', addressValidation)
+addressInput.addEventListener('input', addressValidation)
+
+function addressValidation() {
+  if (regexAddress.test(addressInput.value)) {
+    addressInput.style.border = "2px solid green"
+    addressMsg.style.color = "transparent"
+    inputsValidity.address = true
+  }
+  else {
+    addressInput.style.border = "2px solid red"
+    addressMsg.textContent = errorMsgs.addressMsg
+    addressMsg.style.color = "#F24646"
+    addressMsg.style.fontWeight = "500"
+    inputsValidity.address = false
+  }
+}
+
+// City input selection, validation & style transform
+const cityInput = document.querySelector('.cart__order__form__question:nth-child(4) input')
+
+cityInput.addEventListener('blur', cityValidation)
+cityInput.addEventListener('input', cityValidation)
+
+function cityValidation() {
+  if (regexCity.test(cityInput.value)) {
+    cityInput.style.border = "2px solid green"
+    cityMsg.style.color = "transparent"
+    inputsValidity.city = true
+  }
+  else {
+    cityInput.style.border = "2px solid red"
+    cityMsg.textContent = errorMsgs.cityMsg
+    cityMsg.style.color = "#F24646"
+    cityMsg.style.fontWeight = "500"
+    inputsValidity.city = false
+  }
+}
+
+// Email input selection, validation & style transform
+const emailInput = document.querySelector('.cart__order__form__question:nth-child(5) input')
+
+emailInput.addEventListener('blur', emailValidation)
+emailInput.addEventListener('input', emailValidation)
+
+function emailValidation() {
+  if (regexEmail.test(emailInput.value)) {
+    emailInput.style.border = "2px solid green"
+    emailMsg.style.color = "transparent"
+    inputsValidity.email = true
+  }
+  else {
+    emailInput.style.border = "2px solid red"
+    emailMsg.textContent = errorMsgs.emailMsg
+    emailMsg.style.color = "#F24646"
+    emailMsg.style.fontWeight = "500"
+    inputsValidity.email = false
+  }
+}
+
+
+// Dictionary for inputs validity
+
+const inputsValidity = {
+  firstName: false,
+  lastName: false,
+  address: false,
+  city: false,
+  email: false
+}
+
+
+// Making object for form & cart elements in one variable = body
+
+function makeRequestBody() {
+  const form = document.querySelector('.cart__order__form')
+  const firstName = form.elements.firstName.value
+  const lastName = form.elements.lastName.value
+  const address = form.elements.address.value
+  const city = form.elements.city.value
+  const email = form.elements.email.value
+  const body = {
+    contact: {
+      firstName: firstName,
+      lastName: lastName,
+      address: address,
+      city: city,
+      email: email,
+    },
+    products: getIdsFromCache(),
+  }
+  return body
+}
+
+
+// Final function for control & send to confirmation page
+
+function handleForm(e) {
   e.preventDefault()
-  if (cart.length === 0) {
+
+  const failedInputs = Object.values(inputsValidity).filter(x => !x)
+
+  if (cart.filter(item => item.quantity > 0).length === 0) {
     alert('S\il vous plait, choisissez au moins un article !')
     return false
   }
-  if (isFormInvalid()) return
-  if (isEmailInvalid()) return
 
-  // ------------ API create data --------- 
+  if (failedInputs.length > 0) {
+    alert('Veuillez revoir les informations du formulaire, certains informations semblent incorrectes...')
+    return false
+  }
 
   const body = makeRequestBody()
   fetch('http://localhost:3000/api/products/order', {
@@ -250,40 +406,4 @@ function submitForm(e) {
     .catch((err) => console.error(err))
 }
 
-// ----------- Final check for 'form' & 'email' before confirmation with REGEX check validator ---------------
-function isFinalOrderIsInvalid(itemQuantity) {
-  if (itemQuantity <= 0 || itemQuantity >= 100) {
-    handleError()
-    return;
-  } else (makeRequestBody())
-}
-
-
-function isFormInvalid() {
-  const form = document.querySelector('.cart__order__form')
-  const inputs = form.querySelectorAll('input')
-  inputs.forEach((input) => {
-    if (input.value === '') {
-      alert("S'il vous plait, remplissez tous les champs du formulaire")
-
-    }
-  })
-  return false
-}
-
-
-function isEmailInvalid() {
-  const email = document.querySelector('#email').value
-  const regex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
-  if (regex.test(email) === false) {
-    alert("S'il vous plait, entrez un email correct")
-    return true
-  }
-  return false
-}
-
-function handleError(e) {
-  e.preventDefault()
-  alert('S\il vous plait, choisissez au moins un article !')
-}
 

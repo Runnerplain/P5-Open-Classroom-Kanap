@@ -8,9 +8,13 @@ if (id != null) {
   let imgUrl, altText, articleName
 }
 
+// ------- Fetch command to take data -------------
+
 fetch(`http://localhost:3000/api/products/${id}`)
   .then((response) => response.json())
   .then((res) => handleData(res))
+
+// ------- Create global product with childs éléments -----------------------
 
 function handleData(kanap) {
   const { altTxt, colors, description, imageUrl, name, price } = kanap
@@ -65,6 +69,9 @@ function makeColors(colors) {
 const button = document.querySelector('#addToCart')
 button.addEventListener('click', handleClick)
 
+
+//---------- click function assignment for color & quantity ----------------
+
 function handleClick() {
   const color = document.querySelector('#colors').value
   const quantity = document.querySelector('#quantity').value
@@ -73,7 +80,7 @@ function handleClick() {
   redirectToCart()
 }
 
-//---------save "change" color for same item in cart---------
+//---------Save item & get ids from localStorage to check same color & same id & ajust quantity---------
 
 function saveOrder(color, quantity) {
   const key = `${id}-${color}`
@@ -104,6 +111,8 @@ function isOrderInvalid(color, quantity) {
     return true
   }
 }
+
+//------- Redirection to cart-----------------
 
 
 function redirectToCart() {

@@ -1,3 +1,5 @@
+// Fetch method to take responses 
+
 fetch('http://localhost:3000/api/products')
   .then(res => res.json())
   .then(data => {
@@ -13,6 +15,9 @@ fetch('http://localhost:3000/api/products')
       items.appendChild(makeAnchor(_id, article));
     });
   });
+
+
+// Create elements in page
 
 function makeAnchor(id, article) {
   const anchor = document.createElement('a');
