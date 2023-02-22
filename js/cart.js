@@ -3,10 +3,10 @@
 const cart = []
 
 retrieveItemFromCache()
-cart.forEach((item) => displayItem(item))
+setTimeout(() => {
+  cart.forEach((item) => displayItem(item))
+}, 1000);
 
-// const orderButton = document.querySelector('#order')
-// orderButton.addEventListener('submit', (e) => submitForm(e))
 
 const form = document.querySelector('form')
 form.addEventListener("submit", handleForm)
@@ -20,9 +20,17 @@ function retrieveItemFromCache() {
       localStorage.getItem(localStorage.key(i)) ||
       ''
     const itemObjet = JSON.parse(item)
-    cart.push(itemObjet)
+    console.log(itemObjet);
+    fetch(`http://localhost:3000/api/products/${itemObjet.id}`)         /*modification*/
+      .then((response) => response.json())
+      .then((res) => cart.push({
+        ...itemObjet,
+        price: res.price
+      }))
+
   }
 }
+
 // --------------------------Show item-------------------------------------
 function displayItem(item) {
   const article = makeArticle(item)
@@ -30,6 +38,7 @@ function displayItem(item) {
   article.appendChild(imageDiv)
   const cart__Item__Content = makeCartContent(item)
   article.appendChild(cart__Item__Content)
+  article.setAttribute("prix", item.price)
   displayArticle(article)
   displayTotalQuantity()
   displayTotalPrice()
@@ -51,7 +60,10 @@ function displayTotalQuantity() {
 
 function displayTotalPrice() {
   const totalPrice = document.querySelector('#totalPrice')
-  const total = cart.reduce((total, item) => total + item.price * item.quantity, 0)
+  const total = cart.reduce(function (total, item) {
+    const prix = +document.querySelector(`[data-id="${item.id}"]`).getAttribute('prix')   /*modification */
+    return total + prix * item.quantity
+  }, 0)
   totalPrice.textContent = total
 }
 
@@ -201,6 +213,7 @@ function deleteDataFromCache(item) {
 //------------ Saving new data(informations) to cache -------------
 
 function saveNewDataToCache(item) {
+  delete item.price                                 /*modification*/
   const dataToSave = JSON.stringify(item)
   const key = getKey(item)
   localStorage.setItem(key, dataToSave)

@@ -93,8 +93,7 @@ function saveOrder(color, quantity) {
     id: id,
     color: color,
     quantity: Number(quantityProduct),
-    price: itemPrice,
-    imageUrl: imgUrl,
+    imageUrl: imgUrl,                           /*modification*/
     altTxt: altText,
     name: articleName,
   }
